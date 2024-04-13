@@ -1,5 +1,6 @@
 import arcade
 import constants as c
+from game_view import GameView
 
 
 class StartView(arcade.View):
@@ -39,3 +40,15 @@ class StartView(arcade.View):
             font_size=20,
             anchor_x='center'
         )
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        """
+        Start the game when the player clicks anywhere on the screen.
+        :param x:
+        :param y:
+        :param button:
+        :param modifiers:
+        :return:
+        """
+        game_view = GameView()
+        self.window.show_view(game_view)
