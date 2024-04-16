@@ -17,10 +17,13 @@ class GameView(arcade.View):
         self.player_sprite: Optional[arcade.Sprite] = None
         self.physics_engine: Optional[arcade.PymunkPhysicsEngine] = None
         self.moving_platforms: Optional[arcade.SpriteList] = None
+        self.ladders: Optional[arcade.SpriteList] = None
 
         # Track key inputs
         self.left_pressed: bool = False
         self.right_pressed: bool = False
+        self.up_pressed: bool = False
+        self.down_pressed: bool = False
 
     def on_show_view(self):
         """
@@ -45,6 +48,7 @@ class GameView(arcade.View):
 
         # Get sprite lists from the tile map
         self.moving_platforms = tile_map.sprite_lists[c.LAYER_MOVING_PLATFORMS]
+        self.ladders = tile_map.sprite_lists[c.LAYER_LADDERS]
 
         # Set the background color
         if tile_map.background_color:
@@ -54,7 +58,7 @@ class GameView(arcade.View):
 
         # Create the physics engine
         self.physics_engine = arcade.PymunkPhysicsEngine(
-            damping=c.DEFAULT_DAMPING,
+            damping=c.DAMPING_DEFAULT,
             gravity=(0, -c.GRAVITY)
         )
 
@@ -85,11 +89,41 @@ class GameView(arcade.View):
         :param delta_time:
         :return:
         """
-        # Update the moving platforms
         self.update_moving_platforms(delta_time)
-
-        # Update the physics engine
+        self.update_player_sprite()
         self.physics_engine.step()
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        """
+        Updates player movement based on keyboard input.
+        :param symbol:
+        :param modifiers:
+        :return:
+        """
+        if symbol == arcade.key.LEFT or symbol == arcade.key.A:
+            self.left_pressed = True
+        elif symbol == arcade.key.RIGHT or symbol == arcade.key.D:
+            self.right_pressed = True
+        elif symbol == arcade.key.UP or symbol == arcade.key.W:
+            self.up_pressed = True
+        elif symbol == arcade.key.DOWN or symbol == arcade.key.S:
+            self.down_pressed = True
+
+    def on_key_release(self, _symbol: int, _modifiers: int):
+        """
+        Tracks which movement inputs are no longer active.
+        :param _symbol:
+        :param _modifiers:
+        :return:
+        """
+        if _symbol == arcade.key.LEFT or _symbol == arcade.key.A:
+            self.left_pressed = False
+        elif _symbol == arcade.key.RIGHT or _symbol == arcade.key.D:
+            self.right_pressed = False
+        elif _symbol == arcade.key.UP or _symbol == arcade.key.W:
+            self.up_pressed = False
+        elif _symbol == arcade.key.DOWN or _symbol == arcade.key.S:
+            self.down_pressed = False
 
     def on_draw(self):
         """
@@ -104,7 +138,7 @@ class GameView(arcade.View):
         Create the player sprite and add it to the map and physics engine.
         :return:
         """
-        self.player_sprite = PlayerSprite()
+        self.player_sprite = PlayerSprite(self.ladders)
         self.player_sprite.center_x = c.SPRITE_SCALED_SIZE + c.SPRITE_SCALED_SIZE / 2
         self.player_sprite.center_y = c.SPRITE_SCALED_SIZE + c.SPRITE_SCALED_SIZE / 2
 
@@ -119,6 +153,51 @@ class GameView(arcade.View):
             max_horizontal_velocity=c.MAX_SPEED_X_PLAYER,
             max_vertical_velocity=c.MAX_SPEED_Y_PLAYER
         )
+
+    def update_player_sprite(self):
+        """
+        Update player sprite movement on the ground and in the air based on
+        user inputs.
+        :return:
+        """
+        is_on_ground = self.physics_engine.is_on_ground(self.player_sprite)
+        force = (0, 0)
+        friction = 0
+
+        if self.left_pressed and not self.right_pressed:
+            if is_on_ground or self.player_sprite.is_on_ladder:
+                force = (-c.MOVE_FORCE_GROUND_PLAYER, 0)
+            else:
+                force = (-c.MOVE_FORCE_AIR_PLAYER, 0)
+        elif self.right_pressed and not self.left_pressed:
+            if is_on_ground or self.player_sprite.is_on_ladder:
+                force = (c.MOVE_FORCE_GROUND_PLAYER, 0)
+            else:
+                force = (c.MOVE_FORCE_AIR_PLAYER, 0)
+
+        if self.up_pressed and not self.down_pressed:
+            if is_on_ground and not self.player_sprite.is_on_ladder:
+                impulse = (0, c.JUMP_IMPULSE_PLAYER)
+                self.physics_engine.apply_impulse(self.player_sprite, impulse)
+            elif self.player_sprite.is_on_ladder:
+                friction = c.FRICTION_PLAYER
+                force = (0, c.MOVE_FORCE_GROUND_PLAYER)
+        elif self.down_pressed and not self.up_pressed:
+            if self.player_sprite.is_on_ladder:
+                friction = c.FRICTION_PLAYER
+                force = (0, -c.MOVE_FORCE_GROUND_PLAYER)
+
+        if (
+            not self.up_pressed
+            and not self.down_pressed
+            and not self.right_pressed
+            and not self.left_pressed
+        ):
+            friction = c.FRICTION_PLAYER
+            force = (0, 0)
+
+        self.physics_engine.set_friction(self.player_sprite, friction)
+        self.physics_engine.apply_force(self.player_sprite, force)
 
     def update_moving_platforms(self, delta_time: float):
         """
