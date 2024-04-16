@@ -6,7 +6,6 @@ class PlayerSprite(arcade.Sprite):
     """
     Sprite controlled by the player
     """
-
     def __init__(self, ladder_list):
         super(PlayerSprite, self).__init__()
 
