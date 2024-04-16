@@ -3,8 +3,8 @@ TITLE = 'Platforming with Python'
 INSTRUCTIONS = 'Click to start playing'
 
 # Screen sizing
-SCREEN_WIDTH_PX = 1920
-SCREEN_HEIGHT_PX = 1080
+SCREEN_WIDTH_PX = 1280
+SCREEN_HEIGHT_PX = 720
 
 # Game over screen
 GAME_OVER_SCREEN = 'src/game_over_screen.png'

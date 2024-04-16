@@ -2,6 +2,7 @@ import arcade
 import constants as c
 from typing import Optional
 from player_sprite import PlayerSprite
+from pyglet.math import Vec2
 import utils
 
 
@@ -17,6 +18,7 @@ class GameView(arcade.View):
         self.physics_engine: Optional[arcade.PymunkPhysicsEngine] = None
         self.moving_platforms: Optional[arcade.SpriteList] = None
         self.ladders: Optional[arcade.SpriteList] = None
+        self.main_camera: Optional[arcade.Camera] = None
 
         # Track key inputs
         self.left_pressed: bool = False
@@ -44,6 +46,9 @@ class GameView(arcade.View):
         }
         tile_map = arcade.load_tilemap(c.MAP_SRC, c.SPRITE_SCALING, layer_options)
         self.scene = arcade.Scene.from_tilemap(tile_map)
+
+        # Set up the camera
+        self.main_camera = arcade.Camera(self.window.width, self.window.height)
 
         # Get sprite lists from the tile map
         self.moving_platforms = tile_map.sprite_lists[c.LAYER_MOVING_PLATFORMS]
@@ -96,6 +101,8 @@ class GameView(arcade.View):
             game_over = self.GameOverView()
             self.window.show_view(game_over)
 
+        self.center_camera_to_player()
+
         self.physics_engine.step()
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -136,6 +143,7 @@ class GameView(arcade.View):
         :return:
         """
         self.clear()
+        self.main_camera.use()
         self.scene.draw()
 
     def create_player_sprite(self):
@@ -202,6 +210,29 @@ class GameView(arcade.View):
 
         self.physics_engine.set_friction(self.player_sprite, friction)
         self.physics_engine.apply_force(self.player_sprite, force)
+
+    def center_camera_to_player(self):
+        """
+        Scroll the viewport to keep up with the player sprite
+        :return:
+        """
+        screen_center_x = self.player_sprite.center_x - (
+                self.main_camera.viewport_width / 2
+        )
+
+        screen_center_y = self.player_sprite.center_y - (
+                self.main_camera.viewport_height / 2
+        )
+
+        if screen_center_x < 0:
+            screen_center_x = 0
+
+        if screen_center_y < 0:
+            screen_center_y = 0
+
+        player_center = Vec2(screen_center_x, screen_center_y)
+
+        self.main_camera.move_to(player_center)
 
     def update_moving_platforms(self, delta_time: float):
         """
