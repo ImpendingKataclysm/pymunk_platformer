@@ -2,10 +2,6 @@
 TITLE = 'Platforming with Python'
 INSTRUCTIONS = 'Click to start playing'
 
-# Screen sizing
-SCREEN_WIDTH_PX = 1280
-SCREEN_HEIGHT_PX = 720
-
 # Game over screen
 GAME_OVER_SCREEN = 'src/game_over_screen.png'
 OUT_OF_BOUNDS = -100
@@ -22,6 +18,12 @@ LAYER_PLAYER = 'Player'
 SPRITE_SCALING = 0.5
 SPRITE_IMAGE_SIZE = 128
 SPRITE_SCALED_SIZE = int(SPRITE_IMAGE_SIZE * SPRITE_SCALING)
+
+# Screen sizing and scaling
+SCREEN_GRID_TILES_X = 20
+SCREEN_GRID_TILES_Y = 10
+SCREEN_WIDTH_PX = SCREEN_GRID_TILES_X * SPRITE_SCALED_SIZE
+SCREEN_HEIGHT_PX = SCREEN_GRID_TILES_Y * SPRITE_SCALED_SIZE
 
 # Sprite textures
 CHARACTER_SPRITE_PATH = ':resources:images/animated_characters/'
