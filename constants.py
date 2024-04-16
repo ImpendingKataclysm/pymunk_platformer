@@ -6,6 +6,10 @@ INSTRUCTIONS = 'Click to start playing'
 SCREEN_WIDTH_PX = 1920
 SCREEN_HEIGHT_PX = 1080
 
+# Game over screen
+GAME_OVER_SCREEN = 'src/game_over_screen.png'
+OUT_OF_BOUNDS = -100
+
 # Tile Map
 MAP_SRC = ':resources:tiled_maps/pymunk_test_map.json'
 LAYER_PLATFORMS = 'Platforms'

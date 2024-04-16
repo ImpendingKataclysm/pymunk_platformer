@@ -9,7 +9,6 @@ class GameView(arcade.View):
     """
     Main application screen that displays the game map.
     """
-
     def __init__(self):
         super(GameView, self).__init__()
 
@@ -91,6 +90,12 @@ class GameView(arcade.View):
         """
         self.update_moving_platforms(delta_time)
         self.update_player_sprite()
+
+        # Game over if the player sprite is out of bounds
+        if self.player_sprite.center_y < c.OUT_OF_BOUNDS:
+            game_over = self.GameOverView()
+            self.window.show_view(game_over)
+
         self.physics_engine.step()
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -194,7 +199,6 @@ class GameView(arcade.View):
             and not self.left_pressed
         ):
             friction = c.FRICTION_PLAYER
-            force = (0, 0)
 
         self.physics_engine.set_friction(self.player_sprite, friction)
         self.physics_engine.apply_force(self.player_sprite, force)
@@ -220,3 +224,42 @@ class GameView(arcade.View):
             platform_velocity = (velocity_x, velocity_y)
 
             self.physics_engine.set_velocity(platform, platform_velocity)
+
+    class GameOverView(arcade.View):
+        """
+        Game over screen. User may click anywhere on the screen to restart.
+        """
+        def __init__(self):
+            super(GameView.GameOverView, self).__init__()
+            self.texture = arcade.load_texture(c.GAME_OVER_SCREEN)
+            arcade.set_viewport(
+                left=0,
+                right=c.SCREEN_WIDTH_PX - 1,
+                bottom=0,
+                top=c.SCREEN_HEIGHT_PX - 1
+            )
+
+        def on_draw(self):
+            """
+            Render the game over screen.
+            :return:
+            """
+            self.clear()
+            self.texture.draw_sized(
+                c.SCREEN_WIDTH_PX / 2,
+                c.SCREEN_HEIGHT_PX / 2,
+                c.SCREEN_WIDTH_PX,
+                c.SCREEN_HEIGHT_PX
+            )
+
+        def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+            """
+            Restart the game when the user clicks the screen
+            :param x:
+            :param y:
+            :param button:
+            :param modifiers:
+            :return:
+            """
+            game_view = GameView()
+            self.window.show_view(game_view)
