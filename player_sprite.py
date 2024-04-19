@@ -52,6 +52,7 @@ class PlayerSprite(arcade.Sprite):
         self.star_list = star_list
         self.odometer_x = 0
         self.odometer_y = 0
+        self.score = 0
 
     def pymunk_moved(self, physics_engine, dx, dy, d_angle):
         """
@@ -144,7 +145,8 @@ class PlayerSprite(arcade.Sprite):
 
         if len(collectibles) > 0:
             for sprite in collectibles:
-                points = sprite.properties[c.PROP_POINTS]
+                points = int(sprite.properties[c.PROP_POINTS])
+                self.score += points
                 sprite.remove_from_sprite_lists()
 
     def animate_climbing(self):

@@ -23,6 +23,7 @@ class GameView(arcade.View):
         self.flags: Optional[arcade.SpriteList] = None
         self.stars: Optional[arcade.SpriteList] = None
         self.main_camera: Optional[arcade.Camera] = None
+        self.gui_camera: Optional[arcade.Camera] = None
 
         # Track key inputs
         self.left_pressed: bool = False
@@ -60,11 +61,17 @@ class GameView(arcade.View):
                 'use_spatial_hash': True,
             },
         }
-        tile_map = arcade.load_tilemap(c.MAP_SRC, c.SPRITE_SCALING, layer_options)
+        tile_map = arcade.load_tilemap(
+            c.MAP_SRC,
+            c.SPRITE_SCALING,
+            layer_options
+        )
+
         self.scene = arcade.Scene.from_tilemap(tile_map)
 
-        # Set up the camera
+        # Set up the cameras
         self.main_camera = arcade.Camera(self.window.width, self.window.height)
+        self.gui_camera = arcade.Camera(self.window.width, self.window.height)
 
         # Get sprite lists from the tile map
         self.moving_platforms = tile_map.sprite_lists[c.LAYER_MOVING_PLATFORMS]
@@ -88,6 +95,9 @@ class GameView(arcade.View):
 
         # Add sprites to the physics engine
         self.create_player_sprite()
+
+        # Reset score
+        self.player_sprite.score = 0
 
         self.physics_engine.add_sprite_list(
             tile_map.sprite_lists[c.LAYER_PLATFORMS],
@@ -165,6 +175,16 @@ class GameView(arcade.View):
         self.clear()
         self.main_camera.use()
         self.scene.draw()
+        self.gui_camera.use()
+
+        gui_text = f'{c.SCORE_LABEL} {self.player_sprite.score}'
+        arcade.draw_text(
+            gui_text,
+            c.SCORE_START_X,
+            c.GUI_START_Y,
+            arcade.csscolor.WHITE,
+            c.GUI_FONT_SIZE
+        )
 
     def create_player_sprite(self):
         """
