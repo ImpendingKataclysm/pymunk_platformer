@@ -177,13 +177,34 @@ class GameView(arcade.View):
         self.scene.draw()
         self.gui_camera.use()
 
-        gui_text = f'{c.SCORE_LABEL} {self.player_sprite.score}'
-        arcade.draw_text(
-            gui_text,
-            c.SCORE_START_X,
-            c.GUI_START_Y,
-            arcade.csscolor.WHITE,
-            c.GUI_FONT_SIZE
+        utils.write_gui_text(
+            c.SCORE_LABEL,
+            self.player_sprite.score,
+            c.SCORE_START_X
+        )
+
+        utils.write_gui_text(
+            c.LAYER_COINS,
+            self.player_sprite.coins_left,
+            c.COINS_START_X
+        )
+
+        utils.write_gui_text(
+            c.LAYER_GEMS,
+            self.player_sprite.gems_left,
+            c.GEMS_START_X
+        )
+
+        utils.write_gui_text(
+            c.LAYER_FLAGS,
+            self.player_sprite.flags_left,
+            c.FLAGS_START_X
+        )
+
+        utils.write_gui_text(
+            c.LAYER_STARS,
+            self.player_sprite.stars_left,
+            c.STARS_START_X
         )
 
     def create_player_sprite(self):

@@ -50,6 +50,10 @@ class PlayerSprite(arcade.Sprite):
         self.gem_list = gem_list
         self.flag_list = flag_list
         self.star_list = star_list
+        self.coins_left = len(coin_list)
+        self.gems_left = len(gem_list)
+        self.flags_left = len(flag_list)
+        self.stars_left = len(star_list)
         self.odometer_x = 0
         self.odometer_y = 0
         self.score = 0
@@ -129,7 +133,8 @@ class PlayerSprite(arcade.Sprite):
     def check_collectible_collision(self):
         """
         Checks whether the player sprite has collided with a collectible object
-        e.g. a coin, gem or flag.
+        e.g. a coin, gem or flag, and increases the score accordingly as well
+        as tracking how many of each collectible are left.
         :return:
         """
         collectibles = arcade.check_for_collision_with_list(self, self.coin_list)
@@ -147,6 +152,16 @@ class PlayerSprite(arcade.Sprite):
             for sprite in collectibles:
                 points = int(sprite.properties[c.PROP_POINTS])
                 self.score += points
+
+                if sprite in self.coin_list:
+                    self.coins_left -= 1
+                elif sprite in self.gem_list:
+                    self.gems_left -= 1
+                elif sprite in self.flag_list:
+                    self.flags_left -= 1
+                elif sprite in self.star_list:
+                    self.stars_left -= 1
+
                 sprite.remove_from_sprite_lists()
 
     def animate_climbing(self):

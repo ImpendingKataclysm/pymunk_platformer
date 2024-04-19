@@ -1,4 +1,5 @@
 import arcade
+import constants as c
 
 
 def check_boundary_y(sprite: arcade.Sprite):
@@ -37,3 +38,21 @@ def check_boundary_x(sprite: arcade.Sprite):
         and sprite.left < sprite.boundary_left
     ):
         sprite.change_x *= -1
+
+
+def write_gui_text(label: str, value: int, start_x: int):
+    """
+    Display information in the GUI
+    :param label:
+    :param value:
+    :param start_x:
+    :return:
+    """
+    gui_text = f'{label}: {value}'
+    arcade.draw_text(
+        gui_text,
+        start_x,
+        c.GUI_START_Y,
+        arcade.csscolor.WHITE,
+        c.GUI_FONT_SIZE
+    )
