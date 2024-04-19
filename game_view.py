@@ -185,25 +185,25 @@ class GameView(arcade.View):
 
         utils.write_gui_text(
             c.LAYER_COINS,
-            self.player_sprite.coins_left,
+            len(self.scene[c.LAYER_COINS]),
             c.COINS_START_X
         )
 
         utils.write_gui_text(
             c.LAYER_GEMS,
-            self.player_sprite.gems_left,
+            len(self.scene[c.LAYER_GEMS]),
             c.GEMS_START_X
         )
 
         utils.write_gui_text(
             c.LAYER_FLAGS,
-            self.player_sprite.flags_left,
+            len(self.scene[c.LAYER_FLAGS]),
             c.FLAGS_START_X
         )
 
         utils.write_gui_text(
             c.LAYER_STARS,
-            self.player_sprite.stars_left,
+            len(self.scene[c.LAYER_STARS]),
             c.STARS_START_X
         )
 
