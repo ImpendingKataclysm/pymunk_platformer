@@ -13,6 +13,11 @@ LAYER_MOVING_PLATFORMS = 'Moving Platforms'
 LAYER_DYNAMIC_ITEMS = 'Dynamic Items'
 LAYER_LADDERS = 'Ladders'
 LAYER_PLAYER = 'Player'
+LAYER_COINS = 'Coins'
+LAYER_FLAGS = 'Flags'
+LAYER_STARS = 'Stars'
+LAYER_GEMS = 'Gems'
+PROP_POINTS = 'Points'
 
 # Sprite sizing and scaling
 SPRITE_SCALING = 0.5

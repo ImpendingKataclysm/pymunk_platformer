@@ -6,7 +6,7 @@ class PlayerSprite(arcade.Sprite):
     """
     Sprite controlled by the player
     """
-    def __init__(self, ladder_list):
+    def __init__(self, ladder_list, coin_list, gem_list, flag_list, star_list):
         super(PlayerSprite, self).__init__()
 
         self.scale = c.SPRITE_SCALING
@@ -46,6 +46,10 @@ class PlayerSprite(arcade.Sprite):
         self.is_on_ladder = False
         self.is_on_ground = False
         self.ladder_list = ladder_list
+        self.coin_list = coin_list
+        self.gem_list = gem_list
+        self.flag_list = flag_list
+        self.star_list = star_list
         self.odometer_x = 0
         self.odometer_y = 0
 
@@ -59,7 +63,8 @@ class PlayerSprite(arcade.Sprite):
         :return:
         """
         self.set_sprite_direction(dx)
-        self.climb_ladders()
+        self.check_ladder_collision()
+        self.check_collectible_collision()
 
         # Check if the sprite is on the ground
         self.is_on_ground = physics_engine.is_on_ground(self)
@@ -99,7 +104,7 @@ class PlayerSprite(arcade.Sprite):
         ):
             self.face_direction = c.RIGHT_FACING
 
-    def climb_ladders(self):
+    def check_ladder_collision(self):
         """
         Check if the sprite is on a ladder and update the physics engine
         accordingly.
@@ -119,6 +124,28 @@ class PlayerSprite(arcade.Sprite):
                 self.pymunk.gravity = (0, -c.GRAVITY)
                 self.pymunk.damping = c.DAMPING_DEFAULT
                 self.pymunk.max_vertical_velocity = c.MAX_SPEED_Y_PLAYER
+
+    def check_collectible_collision(self):
+        """
+        Checks whether the player sprite has collided with a collectible object
+        e.g. a coin, gem or flag.
+        :return:
+        """
+        collectibles = arcade.check_for_collision_with_list(self, self.coin_list)
+
+        if len(collectibles) == 0:
+            collectibles = arcade.check_for_collision_with_list(self, self.gem_list)
+
+        if len(collectibles) == 0:
+            collectibles = arcade.check_for_collision_with_list(self, self.flag_list)
+
+        if len(collectibles) == 0:
+            collectibles = arcade.check_for_collision_with_list(self, self.star_list)
+
+        if len(collectibles) > 0:
+            for sprite in collectibles:
+                points = sprite.properties[c.PROP_POINTS]
+                sprite.remove_from_sprite_lists()
 
     def animate_climbing(self):
         """

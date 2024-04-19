@@ -18,6 +18,10 @@ class GameView(arcade.View):
         self.physics_engine: Optional[arcade.PymunkPhysicsEngine] = None
         self.moving_platforms: Optional[arcade.SpriteList] = None
         self.ladders: Optional[arcade.SpriteList] = None
+        self.coins: Optional[arcade.SpriteList] = None
+        self.gems: Optional[arcade.SpriteList] = None
+        self.flags: Optional[arcade.SpriteList] = None
+        self.stars: Optional[arcade.SpriteList] = None
         self.main_camera: Optional[arcade.Camera] = None
 
         # Track key inputs
@@ -43,6 +47,18 @@ class GameView(arcade.View):
             c.LAYER_LADDERS: {
                 'use_spatial_hash': True,
             },
+            c.LAYER_COINS: {
+                'use_spatial_hash': True,
+            },
+            c.LAYER_FLAGS: {
+                'use_spatial_hash': True,
+            },
+            c.LAYER_GEMS: {
+                'use_spatial_hash': True,
+            },
+            c.LAYER_STARS: {
+                'use_spatial_hash': True,
+            },
         }
         tile_map = arcade.load_tilemap(c.MAP_SRC, c.SPRITE_SCALING, layer_options)
         self.scene = arcade.Scene.from_tilemap(tile_map)
@@ -53,6 +69,10 @@ class GameView(arcade.View):
         # Get sprite lists from the tile map
         self.moving_platforms = tile_map.sprite_lists[c.LAYER_MOVING_PLATFORMS]
         self.ladders = tile_map.sprite_lists[c.LAYER_LADDERS]
+        self.coins = tile_map.sprite_lists[c.LAYER_COINS]
+        self.gems = tile_map.sprite_lists[c.LAYER_GEMS]
+        self.flags = tile_map.sprite_lists[c.LAYER_FLAGS]
+        self.stars = tile_map.sprite_lists[c.LAYER_STARS]
 
         # Set the background color
         if tile_map.background_color:
@@ -151,7 +171,14 @@ class GameView(arcade.View):
         Create the player sprite and add it to the map and physics engine.
         :return:
         """
-        self.player_sprite = PlayerSprite(self.ladders)
+        self.player_sprite = PlayerSprite(
+            self.ladders,
+            self.coins,
+            self.gems,
+            self.flags,
+            self.stars
+        )
+
         self.player_sprite.center_x = c.SPRITE_SCALED_SIZE + c.SPRITE_SCALED_SIZE / 2
         self.player_sprite.center_y = c.SPRITE_SCALED_SIZE + c.SPRITE_SCALED_SIZE / 2
 
