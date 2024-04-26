@@ -17,6 +17,7 @@ LAYER_COINS = 'Coins'
 LAYER_FLAGS = 'Flags'
 LAYER_STARS = 'Stars'
 LAYER_GEMS = 'Gems'
+LAYER_ENEMIES = 'Enemies'
 PROP_POINTS = 'Points'
 
 # Sprite sizing and scaling
@@ -32,6 +33,10 @@ SCREEN_HEIGHT_PX = SCREEN_GRID_TILES_Y * SPRITE_SCALED_SIZE
 
 # Sprite textures
 CHARACTER_SPRITE_PATH = ':resources:images/animated_characters/'
+PLAYER_SPRITE_FOLDER = 'female_adventurer'
+PLAYER_SPRITE_FILE = 'femaleAdventurer'
+ENEMY_SPRITE_FOLDER = 'zombie'
+ENEMY_SPRITE_FILE = 'zombie'
 PLAYER_SPRITE_PATH = f'{CHARACTER_SPRITE_PATH}female_adventurer/femaleAdventurer'
 
 # Sprite animations
@@ -60,6 +65,7 @@ JUMP_IMPULSE_PLAYER = GRAVITY - 300
 COLLISION_PLAYER = 'player'
 COLLISION_WALL = 'wall'
 COLLISION_DYNAMIC_ITEM = 'item'
+COLLISION_ENEMY = 'enemy'
 
 # GUI
 GUI_FONT_SIZE = 20
@@ -71,3 +77,6 @@ GEMS_START_X = COINS_START_X + 150
 FLAGS_START_X = GEMS_START_X + 150
 STARS_START_X = FLAGS_START_X + 150
 
+# Enemy Data
+ENEMY_HEALTH = 50
+ENEMY_POINTS = 10

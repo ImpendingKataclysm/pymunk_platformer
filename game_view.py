@@ -1,9 +1,11 @@
 import arcade
+import math
 import constants as c
+import utils
 from typing import Optional
 from player_sprite import PlayerSprite
+from enemy_sprite import EnemySprite
 from pyglet.math import Vec2
-import utils
 
 
 class GameView(arcade.View):
@@ -115,6 +117,32 @@ class GameView(arcade.View):
         self.physics_engine.add_sprite_list(
             self.moving_platforms,
             body_type=arcade.PymunkPhysicsEngine.KINEMATIC
+        )
+
+        # Get enemies layer from the tile map
+        enemies_layer = tile_map.object_lists[c.LAYER_ENEMIES]
+
+        for enemy in enemies_layer:
+            # Get the enemy's coordinates from the map
+            cartesian = tile_map.get_cartesian(
+                enemy.shape[0],
+                enemy.shape[1]
+            )
+
+            # Create an enemy sprite
+            enemy_sprite = EnemySprite()
+
+            # Set the enemy sprite's position
+            enemy_sprite.center_x = math.floor(c.SPRITE_SCALING * tile_map.tile_width * cartesian[0])
+            enemy_sprite.center_y = math.floor(c.SPRITE_SCALING * tile_map.tile_height * (cartesian[1] + 0.5))
+
+            self.scene.add_sprite(c.LAYER_ENEMIES, enemy_sprite)
+
+        # Add enemy sprites to the physics engine
+        self.physics_engine.add_sprite_list(
+            self.scene.get_sprite_list(c.LAYER_ENEMIES),
+            friction=c.FRICTION_PLAYER,
+            collision_type=c.COLLISION_ENEMY
         )
 
     def on_update(self, delta_time: float):

@@ -1,57 +1,41 @@
 import arcade
 import constants as c
+from character_sprite import CharacterSprite
 
 
-class PlayerSprite(arcade.Sprite):
+class PlayerSprite(CharacterSprite):
     """
     Sprite controlled by the player
     """
     def __init__(self, ladder_list, coin_list, gem_list, flag_list, star_list):
-        super(PlayerSprite, self).__init__()
-
-        self.scale = c.SPRITE_SCALING
-        self.face_direction = c.RIGHT_FACING
-
-        self.idle_texture_pair = arcade.load_texture_pair(
-            f'{c.PLAYER_SPRITE_PATH}_idle.png'
+        super(PlayerSprite, self).__init__(
+            c.PLAYER_SPRITE_FOLDER,
+            c.PLAYER_SPRITE_FILE
         )
 
         self.jump_texture_pair = arcade.load_texture_pair(
-            f'{c.PLAYER_SPRITE_PATH}_jump.png'
+            f'{self.sprite_path}_jump.png'
         )
 
         self.fall_texture_pair = arcade.load_texture_pair(
-            f'{c.PLAYER_SPRITE_PATH}_fall.png'
+            f'{self.sprite_path}_fall.png'
         )
 
-        self.walk_texture_pairs = []
         self.climb_textures = []
-
-        for i in range(c.WALK_TEXTURES_TOTAL):
-            texture_pair = arcade.load_texture_pair(
-                f'{c.PLAYER_SPRITE_PATH}_walk{i}.png'
-            )
-
-            self.walk_texture_pairs.append(texture_pair)
 
         for i in range(c.CLIMB_TEXTURES_TOTAL):
             texture = arcade.load_texture(
-                f'{c.PLAYER_SPRITE_PATH}_climb{i}.png'
+                f'{self.sprite_path}_climb{i}.png'
             )
 
             self.climb_textures.append(texture)
 
-        self.texture = self.idle_texture_pair[self.face_direction]
-        self.cur_texture_index = 0
-        self.is_on_ladder = False
         self.is_on_ground = False
         self.ladder_list = ladder_list
         self.coin_list = coin_list
         self.gem_list = gem_list
         self.flag_list = flag_list
         self.star_list = star_list
-        self.odometer_x = 0
-        self.odometer_y = 0
         self.score = 0
 
     def pymunk_moved(self, physics_engine, dx, dy, d_angle):
@@ -82,28 +66,10 @@ class PlayerSprite(arcade.Sprite):
         if self.animate_jumping(dy):
             return
 
-        if abs(dx) <= c.STATIONARY_ZONE and not self.is_on_ladder:
-            self.texture = self.idle_texture_pair[self.face_direction]
+        if self.animate_idle(dx):
             return
 
         self.animate_walking()
-
-    def set_sprite_direction(self, dx):
-        """
-        Change the sprite's facing direction to match its direction of movement.
-        :param dx: horizontal displacement of the sprite
-        :return:
-        """
-        if (
-                dx < -c.STATIONARY_ZONE
-                and self.face_direction == c.RIGHT_FACING
-        ):
-            self.face_direction = c.LEFT_FACING
-        elif (
-                dx > c.STATIONARY_ZONE
-                and self.face_direction == c.LEFT_FACING
-        ):
-            self.face_direction = c.RIGHT_FACING
 
     def check_ladder_collision(self):
         """
@@ -185,24 +151,3 @@ class PlayerSprite(arcade.Sprite):
                 animating = True
 
         return animating
-
-    def animate_walking(self):
-        """
-        Update the sprite's walking animation.
-        :return:
-        """
-        if (
-            abs(self.odometer_x) > c.DISTANCE_PX_TO_CHANGE_TEXTURE
-            and not self.is_on_ladder
-        ):
-            self.odometer_x = 0
-            self.cur_texture_index += 1
-
-            if self.cur_texture_index >= c.WALK_TEXTURES_TOTAL:
-                self.cur_texture_index = 0
-
-            self.texture = self.walk_texture_pairs[
-                self.cur_texture_index
-            ][
-                self.face_direction
-            ]
